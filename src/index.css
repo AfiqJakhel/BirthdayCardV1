@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23D4AF37" stroke="%23D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>') 12 12, auto;
+}
+
+body {
+  background-color: #FFF0F5; /* luxury-blush */
+  color: #6B0F3A; /* luxury-burgundy */
+  @apply font-sans antialiased overflow-x-hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FFF0F5; 
+}
+::-webkit-scrollbar-thumb {
+  background: #EFA8C2; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37; 
+}
+
+/* Section Divider Blurs */
+.blur-divider-top {
+  background: linear-gradient(to bottom, #FFF0F5, transparent 100%);
+}
+.blur-divider-bottom {
+  background: linear-gradient(to top, #FFF0F5, transparent 100%);
+}
+
+.text-gold-shimmer {
+  background: linear-gradient(90deg, #C8825F 0%, #D4AF37 30%, #F2D57E 50%, #D4AF37 70%, #C8825F 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 4s infinite linear;
+}
+
+.wax-seal {
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle at 30% 30%, #D4AF37, #C8825F);
+  border-radius: 50%;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.3);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wax-seal::after {
+  content: 'N';
+  font-family: 'Playfair Display', serif;
+  color: rgba(255,255,255,0.7);
+  font-size: 24px;
+  text-shadow: -1px -1px 0 rgba(0,0,0,0.2), 1px 1px 0 rgba(255,255,255,0.3);
+}
+
+.paper-texture {
+  background-color: #FFF8E7;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+}
