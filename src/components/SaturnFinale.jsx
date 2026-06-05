@@ -1,7 +1,7 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo, useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Html, Stars } from '@react-three/drei';
+import { OrbitControls, Html, Stars, Billboard, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 const basePhotos = [
@@ -151,10 +151,13 @@ const ParticleRing = () => {
   );
 };
 
-// 4. Orbiting Photos (Using Drei Html)
+// 4. Orbiting Photos (Using Native WebGL Textures for Performance)
 const PhotoOrbits = () => {
   const groupRef = useRef();
   
+  // Load textures once. Suspense is handled by Canvas.
+  const textures = useTexture(basePhotos);
+
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = state.clock.elapsedTime * 0.03; // Smooth slow rotation
@@ -163,18 +166,27 @@ const PhotoOrbits = () => {
 
   const renderRing = (photos, radius, offsetAngle = 0, yOffset = 0) => {
     return photos.map((src, i) => {
+      // Find the texture for this photo
+      const textureIndex = basePhotos.indexOf(src);
+      const tex = textures[textureIndex !== -1 ? textureIndex : 0];
+
       const angle = (i / photos.length) * Math.PI * 2 + offsetAngle;
       const x = radius * Math.cos(angle);
       const z = radius * Math.sin(angle);
       
       return (
-        <group key={i} position={[x, yOffset, z]}>
-          <Html transform center distanceFactor={18} zIndexRange={[100, 0]}>
-            <div className="w-4 h-4 md:w-4 md:h-4 rounded-full border-[0.5px] border-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.7)] overflow-hidden bg-black flex items-center justify-center pointer-events-none select-none">
-              <img src={src} className="w-full h-full object-cover pointer-events-none select-none" draggable={false} loading="lazy" />
-            </div>
-          </Html>
-        </group>
+        <Billboard key={i} position={[x, yOffset, z]}>
+          {/* Gold border disc */}
+          <mesh position={[0, 0, -0.01]}>
+            <circleGeometry args={[0.26, 32]} />
+            <meshBasicMaterial color="#D4AF37" transparent opacity={0.8} />
+          </mesh>
+          {/* Photo disc */}
+          <mesh position={[0, 0, 0]}>
+            <circleGeometry args={[0.24, 32]} />
+            <meshBasicMaterial map={tex} />
+          </mesh>
+        </Billboard>
       );
     });
   };
@@ -241,30 +253,32 @@ const ShootingStars = () => (
 const WebGLScene = ({ secretRevealed, onReveal }) => {
   return (
     <Canvas camera={{ position: [0, 5, 18], fov: 60 }} className="w-full h-full cursor-grab active:cursor-grabbing">
-      <ambientLight intensity={1} />
-      
-      {/* Outer Space Background */}
-      <Stars radius={50} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-      <ShootingStars />
-      
-      <GlowSphere secretRevealed={secretRevealed} onReveal={onReveal} />
-      <ParticleSphere />
-      
-      {/* Tilted Saturn System */}
-      <group rotation={[0.15, 0, -0.1]}>
-        <ParticleRing />
-        <PhotoOrbits />
-      </group>
+      <Suspense fallback={null}>
+        <ambientLight intensity={1} />
+        
+        {/* Outer Space Background */}
+        <Stars radius={50} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+        <ShootingStars />
+        
+        <GlowSphere secretRevealed={secretRevealed} onReveal={onReveal} />
+        <ParticleSphere />
+        
+        {/* Tilted Saturn System */}
+        <group rotation={[0.15, 0, -0.1]}>
+          <ParticleRing />
+          <PhotoOrbits />
+        </group>
 
-      <OrbitControls 
-        autoRotate 
-        autoRotateSpeed={0.8} 
-        enableZoom={true} 
-        minDistance={5}
-        maxDistance={35}
-        maxPolarAngle={Math.PI / 1.5}
-        minPolarAngle={Math.PI / 3}
-      />
+        <OrbitControls 
+          autoRotate 
+          autoRotateSpeed={0.8} 
+          enableZoom={true} 
+          minDistance={5}
+          maxDistance={35}
+          maxPolarAngle={Math.PI / 1.5}
+          minPolarAngle={Math.PI / 3}
+        />
+      </Suspense>
     </Canvas>
   );
 };

@@ -82,35 +82,41 @@ const Surprise = () => {
               </motion.div>
             )}
 
-            {/* LAYER 3: The Memory Book with custom background */}
-            {layer === 3 && (
-              <>
-                <motion.div
-                  key="layer3-bg"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1.5 }}
-                  className="fixed inset-0 z-[90] bg-[#0A0A0A]"
-                >
-                  <SparkleBackground />
-                </motion.div>
-                
-                <motion.div
-                  key="layer3-book"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1.5 }}
-                  className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
-                >
-                  <div className="flex items-center justify-center w-full h-full portrait:w-[100vh] portrait:h-[100vw] portrait:-rotate-90 origin-center transition-transform duration-500">
-                    <MemoryBook onComplete={() => setLayer(4)} />
-                  </div>
-                </motion.div>
-              </>
-            )}
+
           </AnimatePresence>
         </motion.div>
       </section>
+
+      {/* LAYER 3: The Memory Book (Rendered outside normal flow to cover screen) */}
+      <AnimatePresence>
+        {layer === 3 && (
+          <>
+            <motion.div
+              key="layer3-bg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5 }}
+              className="fixed inset-0 z-[90] bg-[#0A0A0A]"
+            >
+              <SparkleBackground />
+            </motion.div>
+            
+            <motion.div
+              key="layer3-book"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
+            >
+              <div className="flex items-center justify-center w-full h-full portrait:w-[100vh] portrait:h-[100vw] portrait:-rotate-90 origin-center transition-transform duration-500">
+                <MemoryBook onComplete={() => setLayer(4)} />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* LAYER 4: Saturn Finale (Rendered outside normal flow to cover screen) */}
       <AnimatePresence>
