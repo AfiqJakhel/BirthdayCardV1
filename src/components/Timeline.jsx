@@ -74,22 +74,24 @@ const Timeline = () => {
             key={index}
             drag
             dragConstraints={containerRef}
-            dragElastic={0.3}
-            whileDrag={{ scale: 1.15, zIndex: 100, cursor: "grabbing" }}
+            dragElastic={0}
+            dragMomentum={false}
+            whileDrag={{ scale: 1.05, zIndex: 100, cursor: "grabbing" }}
             initial={{ opacity: 0, scale: 0, rotate: pos.rotate }}
             whileInView={{ opacity: 1, scale: pos.scale, rotate: pos.rotate }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{ 
-              type: "spring", 
-              stiffness: 260, 
-              damping: 20, 
-              delay: index * 0.03 
+              type: "tween", 
+              duration: 0.4,
+              ease: "easeOut",
+              delay: index * 0.02 
             }}
-            className="absolute cursor-grab bg-white p-2 pb-8 md:p-3 md:pb-12 shadow-[0_15px_35px_rgba(0,0,0,0.15)] border border-[#D4AF37]/20 flex flex-col items-center w-28 md:w-44 lg:w-52"
+            className="absolute cursor-grab bg-white p-2 pb-6 md:p-3 md:pb-12 shadow-sm md:shadow-[0_15px_35px_rgba(0,0,0,0.15)] border border-[#D4AF37]/20 flex flex-col items-center w-28 md:w-44 lg:w-52 will-change-transform"
             style={{ 
               left: `${pos.left}%`,
               top: `${pos.top}%`,
-              zIndex: Math.floor(Math.random() * 50)
+              zIndex: Math.floor(Math.random() * 50),
+              willChange: "transform"
             }}
           >
             <div className="w-full aspect-[4/5] overflow-hidden rounded-sm bg-gray-100 pointer-events-none">
@@ -99,6 +101,7 @@ const Timeline = () => {
                 className="w-full h-full object-cover" 
                 draggable={false}
                 loading="lazy"
+                decoding="async"
               />
             </div>
           </motion.div>
