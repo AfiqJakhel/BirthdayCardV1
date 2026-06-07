@@ -110,7 +110,7 @@ const Timeline = () => {
             dragConstraints={containerRef}
             dragElastic={0}
             dragMomentum={false}
-            whileDrag={{ scale: 1.05, zIndex: 100, cursor: "grabbing" }}
+            whileDrag={{ scale: 1.05, cursor: "grabbing" }}
             initial={{ opacity: 0, scale: 0, rotate: pos.rotate }}
             whileInView={{ opacity: 1, scale: pos.scale, rotate: pos.rotate }}
             viewport={{ once: true, margin: "400px" }}
