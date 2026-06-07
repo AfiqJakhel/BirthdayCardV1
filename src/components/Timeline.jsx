@@ -31,14 +31,42 @@ const allGalleryPhotos = [
   "/WhatsApp Image 2026-06-05 at 22.49.00.jpeg"
 ];
 
+// LazyImage component delays the mounting of the <img> tag
+// to prevent the browser from downloading all images at once.
+const LazyImage = ({ src, delay, alt, className }) => {
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShouldLoad(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
+  return shouldLoad ? (
+    <img 
+      src={src} 
+      alt={alt} 
+      className={className} 
+      draggable={false}
+      onContextMenu={(e) => e.preventDefault()}
+      loading="lazy"
+      decoding="async"
+    />
+  ) : null;
+};
+
 const Timeline = () => {
   const containerRef = useRef(null);
   const [positions, setPositions] = useState([]);
+  const [selectedPhotos, setSelectedPhotos] = useState([]);
 
   useEffect(() => {
-    // Generate random positions, but keep them generally within 10-80% of the container
-    // so they are fully visible and scatter naturally.
-    const newPositions = allGalleryPhotos.map(() => ({
+    // Randomly pick 18 photos (2/3 of 27)
+    const shuffled = [...allGalleryPhotos].sort(() => 0.5 - Math.random());
+    const subset = shuffled.slice(0, 18);
+    setSelectedPhotos(subset);
+
+    // Generate random positions
+    const newPositions = subset.map(() => ({
       left: 5 + Math.random() * 75, // 5% to 80% width
       top: 5 + Math.random() * 80,  // 5% to 85% height
       rotate: Math.random() * 60 - 30, // -30deg to 30deg
@@ -68,7 +96,10 @@ const Timeline = () => {
       </div>
 
       {/* Interactive Drag Canvas */}
-      <div className="flex-1 w-full relative h-full">
+      <div 
+        className="flex-1 w-full relative h-full" 
+        onContextMenu={(e) => e.preventDefault()} // Block right click
+      >
         {positions.map((pos, index) => (
           <motion.div
             key={index}
@@ -95,13 +126,11 @@ const Timeline = () => {
             }}
           >
             <div className="w-full aspect-[4/5] overflow-hidden rounded-sm bg-gray-100 pointer-events-none">
-              <img 
-                src={allGalleryPhotos[index]} 
+              <LazyImage 
+                src={selectedPhotos[index]} 
+                delay={index * 200} // 200ms stagger between each network request!
                 alt="Memory" 
-                className="w-full h-full object-cover" 
-                draggable={false}
-                loading="lazy"
-                decoding="async"
+                className="w-full h-full object-cover select-none pointer-events-none" 
               />
             </div>
           </motion.div>
