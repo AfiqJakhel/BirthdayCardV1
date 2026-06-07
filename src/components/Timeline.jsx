@@ -48,7 +48,6 @@ const LazyImage = ({ src, delay, alt, className }) => {
       className={className} 
       draggable={false}
       onContextMenu={(e) => e.preventDefault()}
-      loading="lazy"
       decoding="async"
     />
   ) : null;
@@ -60,9 +59,13 @@ const Timeline = () => {
   const [selectedPhotos, setSelectedPhotos] = useState([]);
 
   useEffect(() => {
-    // Randomly pick 18 photos (2/3 of 27)
+    // Detect if device is mobile based on screen width
+    const isMobile = window.innerWidth <= 768;
+    const photoCount = isMobile ? 10 : allGalleryPhotos.length;
+
+    // Randomly pick photos based on device type
     const shuffled = [...allGalleryPhotos].sort(() => 0.5 - Math.random());
-    const subset = shuffled.slice(0, 18);
+    const subset = shuffled.slice(0, photoCount);
     setSelectedPhotos(subset);
 
     // Generate random positions
@@ -110,12 +113,12 @@ const Timeline = () => {
             whileDrag={{ scale: 1.05, zIndex: 100, cursor: "grabbing" }}
             initial={{ opacity: 0, scale: 0, rotate: pos.rotate }}
             whileInView={{ opacity: 1, scale: pos.scale, rotate: pos.rotate }}
-            viewport={{ once: true, margin: "0px" }}
+            viewport={{ once: true, margin: "400px" }}
             transition={{ 
               type: "tween", 
               duration: 0.4,
               ease: "easeOut",
-              delay: index * 0.02 
+              delay: index * 0.01 
             }}
             className="absolute cursor-grab bg-white p-2 pb-6 md:p-3 md:pb-12 shadow-sm md:shadow-[0_15px_35px_rgba(0,0,0,0.15)] border border-[#D4AF37]/20 flex flex-col items-center w-28 md:w-44 lg:w-52 will-change-transform"
             style={{ 
